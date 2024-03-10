@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CulmativeWinAppCS12", "CulmativeWinAppCS12\CulmativeWinAppCS12.csproj", "{A59536F8-F7C5-4FC2-80CF-4501262CECAC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A59536F8-F7C5-4FC2-80CF-4501262CECAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A59536F8-F7C5-4FC2-80CF-4501262CECAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A59536F8-F7C5-4FC2-80CF-4501262CECAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A59536F8-F7C5-4FC2-80CF-4501262CECAC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B669FA4B-6AD6-4CD5-86EA-036E18CE8BFD}
+	EndGlobalSection
+EndGlobal
