@@ -1,5 +1,6 @@
 ﻿using Azure.Messaging.EventHubs.Consumer;
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,6 +19,7 @@ namespace CulmativeWinAppCS12
         private readonly static string EventHubName = "wchs";
         private Data data = new Data(0, 0, 0, 0);
         static int msgCount = 1;
+        Plant[] plants = new Plant[2040];
 
         // start reading any messages
         private async Task ReceiveMessagesFromDeviceAsync()
@@ -89,7 +91,37 @@ namespace CulmativeWinAppCS12
         {
             SetUpChart();
             SetUpListBox();
+            DownloadData();
             ReceiveMessagesFromDeviceAsync();
         }
+        private void DownloadData()
+        {
+            try
+            {
+                StreamReader reader = new StreamReader("PlantInfo.csv");
+                double d;
+                foreach (Plant plant in plants)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
+                    if (double.TryParse(values[14], out d))
+                    {
+                        plant.Name = values[4];
+                        plant.Moisture = double.Parse(values[14]);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            foreach (Plant plant in plants)
+            {
+                if (plant.Name != null)
+                {
+                    plantSelector.Items.Add($"{plant.Name}");
+                }
+            }
+        }
+
     }
 }

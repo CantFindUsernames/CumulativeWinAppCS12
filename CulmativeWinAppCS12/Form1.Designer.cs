@@ -41,6 +41,9 @@
             this.humBox = new System.Windows.Forms.TextBox();
             this.lightBox = new System.Windows.Forms.TextBox();
             this.moisBox = new System.Windows.Forms.TextBox();
+            this.plantSelector = new System.Windows.Forms.ComboBox();
+            this.preferredMoisturelbl = new System.Windows.Forms.Label();
+            this.preferredMoisturebx = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.chartData)).BeginInit();
             this.SuspendLayout();
             // 
@@ -144,9 +147,40 @@
             this.moisBox.Size = new System.Drawing.Size(100, 31);
             this.moisBox.TabIndex = 9;
             // 
+            // plantSelector
+            // 
+            this.plantSelector.FormattingEnabled = true;
+            this.plantSelector.Location = new System.Drawing.Point(27, 325);
+            this.plantSelector.Name = "plantSelector";
+            this.plantSelector.Size = new System.Drawing.Size(121, 21);
+            this.plantSelector.TabIndex = 10;
+            // 
+            // preferredMoisturelbl
+            // 
+            this.preferredMoisturelbl.AutoSize = true;
+            this.preferredMoisturelbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.preferredMoisturelbl.Location = new System.Drawing.Point(179, 325);
+            this.preferredMoisturelbl.Name = "preferredMoisturelbl";
+            this.preferredMoisturelbl.Size = new System.Drawing.Size(196, 25);
+            this.preferredMoisturelbl.TabIndex = 11;
+            this.preferredMoisturelbl.Text = "Preferred Moisture:";
+            // 
+            // preferredMoisturebx
+            // 
+            this.preferredMoisturebx.AutoSize = true;
+            this.preferredMoisturebx.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.preferredMoisturebx.Location = new System.Drawing.Point(395, 325);
+            this.preferredMoisturebx.Name = "preferredMoisturebx";
+            this.preferredMoisturebx.Size = new System.Drawing.Size(24, 25);
+            this.preferredMoisturebx.TabIndex = 12;
+            this.preferredMoisturebx.Text = "0";
+            // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(1247, 718);
+            this.Controls.Add(this.preferredMoisturebx);
+            this.Controls.Add(this.preferredMoisturelbl);
+            this.Controls.Add(this.plantSelector);
             this.Controls.Add(this.moisBox);
             this.Controls.Add(this.lightBox);
             this.Controls.Add(this.humBox);
@@ -177,6 +211,9 @@
         private System.Windows.Forms.TextBox humBox;
         private System.Windows.Forms.TextBox lightBox;
         private System.Windows.Forms.TextBox moisBox;
+        private System.Windows.Forms.ComboBox plantSelector;
+        private System.Windows.Forms.Label preferredMoisturelbl;
+        private System.Windows.Forms.Label preferredMoisturebx;
     }
 }
 
