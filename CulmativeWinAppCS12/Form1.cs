@@ -1,5 +1,6 @@
 ﻿using Azure.Messaging.EventHubs.Consumer;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace CulmativeWinAppCS12
         private readonly static string EventHubName = "wchs";
         private Data data = new Data(0, 0, 0, 0);
         static int msgCount = 1;
-        Plant[] plants = new Plant[2040];
+        Plant[] plants = new Plant[2035];
 
         // start reading any messages
         private async Task ReceiveMessagesFromDeviceAsync()
@@ -89,39 +90,51 @@ namespace CulmativeWinAppCS12
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            SetUpChart();
-            SetUpListBox();
+            //SetUpChart();
+            //SetUpListBox();
             DownloadData();
-            ReceiveMessagesFromDeviceAsync();
+            //ReceiveMessagesFromDeviceAsync();
         }
         private void DownloadData()
         {
-            try
+            StreamReader reader = new StreamReader("PlantInfo.csv");
+            int ColumnsCount = reader.ReadLine().Split(',').Length;
+            for (int j = 0; j < plants.Length; j ++)
             {
-                StreamReader reader = new StreamReader("PlantInfo.csv");
-                double d;
-                foreach (Plant plant in plants)
+                if (reader.ReadLine() != null)
                 {
                     var line = reader.ReadLine();
-                    var values = line.Split(',');
-                    if (double.TryParse(values[14], out d))
+                    if (line != null)
                     {
-                        plant.Name = values[4];
-                        plant.Moisture = double.Parse(values[14]);
+                        var values = line.Split(',');
+                        Plant newPlant = new Plant();
+                        for (int i = 0; i < values[4].Length; i++) {
+                            if (values[4].Substring(i, 1) == "?" || values[4].Substring(i, 1) == "(") {
+                                values[4] = values[4].Substring(0, i);
+                            }
+                        }
+                        newPlant.Name = values[4];
+                        newPlant.Moisture = values[14];
+                        plants[j] = newPlant;
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-            }
+            }        
             foreach (Plant plant in plants)
             {
-                if (plant.Name != null)
+                if (plant != null)
                 {
-                    plantSelector.Items.Add($"{plant.Name}");
+                    plantSelector.Items.Add(plant.Name);
+
                 }
-            }
+            }      
         }
 
+        private void plantSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (plantSelector.SelectedIndex > 0)
+            {
+                //preferredMoisturebx.Text = plants[plantSelector.SelectedIndex].MoistureMin.ToString() + " - " + plants[plantSelector.SelectedIndex].MoistureMax.ToString();
+            }
+        }
     }
 }

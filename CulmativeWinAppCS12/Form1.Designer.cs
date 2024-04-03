@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.listMsgs = new System.Windows.Forms.ListBox();
             this.chartData = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.TempLbl = new System.Windows.Forms.Label();
@@ -57,16 +57,16 @@
             // 
             // chartData
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chartData.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chartData.Legends.Add(legend1);
+            chartArea2.Name = "ChartArea1";
+            this.chartData.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.chartData.Legends.Add(legend2);
             this.chartData.Location = new System.Drawing.Point(576, 12);
             this.chartData.Name = "chartData";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartData.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.chartData.Series.Add(series2);
             this.chartData.Size = new System.Drawing.Size(673, 713);
             this.chartData.TabIndex = 1;
             this.chartData.Text = "chart1";
@@ -152,14 +152,15 @@
             this.plantSelector.FormattingEnabled = true;
             this.plantSelector.Location = new System.Drawing.Point(27, 325);
             this.plantSelector.Name = "plantSelector";
-            this.plantSelector.Size = new System.Drawing.Size(121, 21);
+            this.plantSelector.Size = new System.Drawing.Size(236, 21);
             this.plantSelector.TabIndex = 10;
+            this.plantSelector.SelectedIndexChanged += new System.EventHandler(this.plantSelector_SelectedIndexChanged);
             // 
             // preferredMoisturelbl
             // 
             this.preferredMoisturelbl.AutoSize = true;
             this.preferredMoisturelbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.preferredMoisturelbl.Location = new System.Drawing.Point(179, 325);
+            this.preferredMoisturelbl.Location = new System.Drawing.Point(269, 325);
             this.preferredMoisturelbl.Name = "preferredMoisturelbl";
             this.preferredMoisturelbl.Size = new System.Drawing.Size(196, 25);
             this.preferredMoisturelbl.TabIndex = 11;
@@ -169,7 +170,7 @@
             // 
             this.preferredMoisturebx.AutoSize = true;
             this.preferredMoisturebx.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.preferredMoisturebx.Location = new System.Drawing.Point(395, 325);
+            this.preferredMoisturebx.Location = new System.Drawing.Point(471, 325);
             this.preferredMoisturebx.Name = "preferredMoisturebx";
             this.preferredMoisturebx.Size = new System.Drawing.Size(24, 25);
             this.preferredMoisturebx.TabIndex = 12;
