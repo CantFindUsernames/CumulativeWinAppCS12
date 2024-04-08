@@ -8,6 +8,9 @@ namespace CulmativeWinAppCS12
 {
     class Plant
     {
+        double _moistureMin;
+        double _moistureMax;
+        string _moisture;
         public Plant(string name, string moisture)
         {
             this.Name = name;
@@ -18,26 +21,29 @@ namespace CulmativeWinAppCS12
             this.Moisture = null;
         }
         public string Name { get; set; }
-        public string Moisture { get; set; }
+        public string Moisture
+        {
+            get { return _moisture; }
+            set
+            {
+                _moisture = value;
+                if (this.Moisture == "Low") { _moistureMin = 0.2; _moistureMax = 0.4; }
+                if (this.Moisture == "Medium") { _moistureMin = 0.4; _moistureMax = 0.6; }
+                if (this.Moisture == "High") { _moistureMin = 0.6; _moistureMax = 0.8; }
+                //else {_moistureMin = 0.5; _moistureMax = 0.5; }
+
+            }
+        }
         public double MoistureMin
         {
-            get { return this.MoistureMin; }
-            set { if (this.Moisture == "Low") { this.MoistureMin = 0.2; }
-                if (this.Moisture == "Medium") { this.MoistureMin = 0.4; }
-                if (this.Moisture == "High") { this.MoistureMin = 0.6; }
-                else { this.MoistureMin = 0.5; }
-            }
+            get { return _moistureMin; }
+            set { value = _moistureMin; }
+            
         }
         public double MoistureMax
         {
-            get { return this.MoistureMax; }
-            set
-            {
-                if (this.Moisture == "Low") { this.MoistureMax = 0.4; }
-                if (this.Moisture == "Medium") { this.MoistureMax = 0.6; }
-                if (this.Moisture == "High") { this.MoistureMax = 0.8; }
-                else { this.MoistureMax = 0.5;}
-            } 
+            get { return _moistureMax; }
+            set {value = _moistureMax; } 
         }
     }
 }

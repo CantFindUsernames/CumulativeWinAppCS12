@@ -90,10 +90,10 @@ namespace CulmativeWinAppCS12
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //SetUpChart();
-            //SetUpListBox();
+            SetUpChart();
+            SetUpListBox();
             DownloadData();
-            //ReceiveMessagesFromDeviceAsync();
+            ReceiveMessagesFromDeviceAsync();
         }
         private void DownloadData()
         {
@@ -107,14 +107,12 @@ namespace CulmativeWinAppCS12
                     if (line != null)
                     {
                         var values = line.Split(',');
-                        Plant newPlant = new Plant();
                         for (int i = 0; i < values[4].Length; i++) {
                             if (values[4].Substring(i, 1) == "?" || values[4].Substring(i, 1) == "(") {
                                 values[4] = values[4].Substring(0, i);
                             }
                         }
-                        newPlant.Name = values[4];
-                        newPlant.Moisture = values[14];
+                        Plant newPlant = new Plant(values[4], values[14]);
                         plants[j] = newPlant;
                     }
                 }
@@ -124,7 +122,6 @@ namespace CulmativeWinAppCS12
                 if (plant != null)
                 {
                     plantSelector.Items.Add(plant.Name);
-
                 }
             }      
         }
@@ -133,7 +130,7 @@ namespace CulmativeWinAppCS12
         {
             if (plantSelector.SelectedIndex > 0)
             {
-                //preferredMoisturebx.Text = plants[plantSelector.SelectedIndex].MoistureMin.ToString() + " - " + plants[plantSelector.SelectedIndex].MoistureMax.ToString();
+                preferredMoisturebx.Text = plants[plantSelector.SelectedIndex].MoistureMin.ToString() + " - " + plants[plantSelector.SelectedIndex].MoistureMax.ToString();
             }
         }
     }
