@@ -1,11 +1,18 @@
 ﻿using Azure.Messaging.EventHubs.Consumer;
 using System;
 using System.Collections.Generic;
+using MessageMedia.Messages;
+using MessageMedia.Messages.Controllers;
+using MessageMedia.Messages.Exceptions;
+using MessageMedia.Messages.Models;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using static Microsoft.Azure.Amqp.Serialization.SerializableType;
+using System.Net.Mail;
+using System.Net;
 
 namespace CulmativeWinAppCS12
 {
@@ -21,6 +28,8 @@ namespace CulmativeWinAppCS12
         private Data data = new Data(0, 0, 0, 0);
         static int msgCount = 1;
         Plant[] plants = new Plant[2035];
+        bool moistureBelow = false;
+        bool moistureAbove = false;
 
         // start reading any messages
         private async Task ReceiveMessagesFromDeviceAsync()
@@ -48,9 +57,24 @@ namespace CulmativeWinAppCS12
                                 lightBox.Text = data.Light.ToString();
                                 break;
                             case "Moi":
-                                data.Moisture = float.Parse(datum .Substring(12, 4));
+                                data.Moisture = float.Parse(datum.Substring(12, 4));
                                 moisBox.Text = data.Moisture.ToString();
-                                break;
+                                if (data.Moisture <= plants[plantSelector.SelectedIndex].MoistureMin && moistureBelow == false)
+                                {
+                                    SendEmail("Low Water", "Your plants water moisture is low and will be watered shortly.");
+                                    moistureBelow = true;
+                                }
+                                if (data.Moisture >= plants[plantSelector.SelectedIndex].MoistureMax & moistureAbove == false)
+                                {
+                                    SendEmail("Too Much Water", "Your plants water moisture is way too high, please check to make sure the pump is working properly.");
+                                    moistureAbove = true;    
+                                }
+                                if (data.Moisture > plants[plantSelector.SelectedIndex].MoistureMin && data.Moisture < plants[plantSelector.SelectedIndex].MoistureMax)
+                                {
+                                    moistureBelow = false;
+                                    moistureAbove = false;
+                                }
+                            break;
                         }
                         UpdateChart(data);
                         msgCount++;
@@ -132,6 +156,16 @@ namespace CulmativeWinAppCS12
             {
                 preferredMoisturebx.Text = plants[plantSelector.SelectedIndex].MoistureMin.ToString() + " - " + plants[plantSelector.SelectedIndex].MoistureMax.ToString();
             }
+        }
+        public static void SendEmail(string subject, string body)
+        {
+            var smtpClient = new SmtpClient("smtp-mail.outlook.com")
+            {
+                Port = 587,
+                Credentials = new NetworkCredential("neolastless@outlook.com", "NeoOne1New"),
+                EnableSsl = true,
+            };
+            smtpClient.Send("neolastless@outlook.com", "jsuurman@gmail.com", "Your Plant", "Your plant has been water");
         }
     }
 }
