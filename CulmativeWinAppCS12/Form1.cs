@@ -13,6 +13,10 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static Microsoft.Azure.Amqp.Serialization.SerializableType;
 using System.Net.Mail;
 using System.Net;
+using System.IO.Ports;
+using Newtonsoft.Json;
+using Microsoft.Azure.Devices.Client;
+using Message = Microsoft.Azure.Devices.Client.Message;
 
 namespace CulmativeWinAppCS12
 {
@@ -22,7 +26,8 @@ namespace CulmativeWinAppCS12
         {
             InitializeComponent();
         }
-
+        private static DeviceClient deviceClient;
+        string sendConnectionString = "HostName=WCHS.azure-devices.net;DeviceId=wchs5;SharedAccessKey=5qXtc9bX4D66hoqSviZVXEMhoK/SVPCvOAIoTAVQHns=";
         private readonly static string connectionString = "Endpoint=sb://iothub-ns-wchs-58009161-d596108607.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=glM1A7WyVpMhjjMrhLcdQjkIr91upa8tSAIoTFiDvUI=;EntityPath=wchs";
         private readonly static string EventHubName = "wchs";
         private Data data = new Data(0, 0, 0, 0);
@@ -155,6 +160,8 @@ namespace CulmativeWinAppCS12
             if (plantSelector.SelectedIndex > 0)
             {
                 preferredMoisturebx.Text = plants[plantSelector.SelectedIndex].MoistureMin.ToString() + " - " + plants[plantSelector.SelectedIndex].MoistureMax.ToString();
+                SendMsg("M" + plants[plantSelector.SelectedIndex].MoistureMin.ToString(), sendConnectionString);
+                SendMsg("M" + plants[plantSelector.SelectedIndex].MoistureMax.ToString(), sendConnectionString);
             }
         }
         public static void SendEmail(string subject, string body)
@@ -166,6 +173,38 @@ namespace CulmativeWinAppCS12
                 EnableSsl = true,
             };
             smtpClient.Send("neolastless@outlook.com", "jsuurman@gmail.com", "Your Plant", "Your plant has been water");
+        }
+        public static async void SendMsg(string msg, string connectionString)
+        {
+            try
+            {
+                SerialPort port = new SerialPort { BaudRate = 9600, PortName = "COM6" };
+                port.Open();
+                try
+                {
+                    while (true)
+                    {
+                        System.Threading.Thread.Sleep(500);
+                        deviceClient = DeviceClient.CreateFromConnectionString(connectionString, Microsoft.Azure.Devices.Client.TransportType.Mqtt);
+                        string jsonData = JsonConvert.SerializeObject(msg);
+                        Message message = new Message(Encoding.ASCII.GetBytes(jsonData));
+                        await deviceClient.SendEventAsync(message);
+                        await Task.Delay(300);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Encountered error while reading serial port");
+                    Console.WriteLine(ex.ToString());
+                    System.Threading.Thread.Sleep(500);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Encountered error while opening serial port ");
+                Console.WriteLine(ex.ToString());
+                System.Threading.Thread.Sleep(500);
+            }
         }
     }
 }
