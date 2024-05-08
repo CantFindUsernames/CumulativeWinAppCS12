@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.listMsgs = new System.Windows.Forms.ListBox();
             this.chartData = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.TempLbl = new System.Windows.Forms.Label();
@@ -44,6 +44,9 @@
             this.plantSelector = new System.Windows.Forms.ComboBox();
             this.preferredMoisturelbl = new System.Windows.Forms.Label();
             this.preferredMoisturebx = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.userEmail = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.chartData)).BeginInit();
             this.SuspendLayout();
             // 
@@ -52,21 +55,22 @@
             this.listMsgs.FormattingEnabled = true;
             this.listMsgs.Location = new System.Drawing.Point(27, 12);
             this.listMsgs.Name = "listMsgs";
-            this.listMsgs.Size = new System.Drawing.Size(543, 82);
+            this.listMsgs.Size = new System.Drawing.Size(232, 82);
             this.listMsgs.TabIndex = 0;
+            this.listMsgs.UseWaitCursor = true;
             // 
             // chartData
             // 
-            chartArea2.Name = "ChartArea1";
-            this.chartData.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.chartData.Legends.Add(legend2);
+            chartArea1.Name = "ChartArea1";
+            this.chartData.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chartData.Legends.Add(legend1);
             this.chartData.Location = new System.Drawing.Point(576, 12);
             this.chartData.Name = "chartData";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chartData.Series.Add(series2);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chartData.Series.Add(series1);
             this.chartData.Size = new System.Drawing.Size(673, 713);
             this.chartData.TabIndex = 1;
             this.chartData.Text = "chart1";
@@ -176,9 +180,40 @@
             this.preferredMoisturebx.TabIndex = 12;
             this.preferredMoisturebx.Text = "0";
             // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.Tomato;
+            this.button1.Location = new System.Drawing.Point(384, 29);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(176, 44);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "Turn off Water";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 551);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(54, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Set Email:";
+            // 
+            // userEmail
+            // 
+            this.userEmail.Location = new System.Drawing.Point(74, 551);
+            this.userEmail.Name = "userEmail";
+            this.userEmail.Size = new System.Drawing.Size(209, 20);
+            this.userEmail.TabIndex = 15;
+            this.userEmail.TextChanged += new System.EventHandler(this.userEmail_TextChanged);
+            // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(1247, 718);
+            this.Controls.Add(this.userEmail);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.preferredMoisturebx);
             this.Controls.Add(this.preferredMoisturelbl);
             this.Controls.Add(this.plantSelector);
@@ -215,6 +250,9 @@
         private System.Windows.Forms.ComboBox plantSelector;
         private System.Windows.Forms.Label preferredMoisturelbl;
         private System.Windows.Forms.Label preferredMoisturebx;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox userEmail;
     }
 }
 

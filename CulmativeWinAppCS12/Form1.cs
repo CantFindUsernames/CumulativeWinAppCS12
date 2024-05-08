@@ -27,7 +27,8 @@ namespace CulmativeWinAppCS12
             InitializeComponent();
         }
         private static DeviceClient deviceClient;
-        string sendConnectionString = "HostName=WCHS.azure-devices.net;DeviceId=wchs5;SharedAccessKey=5qXtc9bX4D66hoqSviZVXEMhoK/SVPCvOAIoTAVQHns=";
+        string usersEmail;
+        string sendConnectionString = "HostName=WCHS.azure-devices.net;DeviceId=wchs5;SharedAccessKey=oqnP/yu8GtfqXRs4ffkAy/r2skjaIvK9ZAIoTDW+sBk=";
         private readonly static string connectionString = "Endpoint=sb://iothub-ns-wchs-58009161-d596108607.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=glM1A7WyVpMhjjMrhLcdQjkIr91upa8tSAIoTFiDvUI=;EntityPath=wchs";
         private readonly static string EventHubName = "wchs";
         private Data data = new Data(0, 0, 0, 0);
@@ -36,50 +37,65 @@ namespace CulmativeWinAppCS12
         bool moistureBelow = false;
         bool moistureAbove = false;
 
-        // start reading any messages
         private async Task ReceiveMessagesFromDeviceAsync()
         {
-                await using EventHubConsumerClient consumer = new EventHubConsumerClient(EventHubConsumerClient.DefaultConsumerGroupName, connectionString, EventHubName);
-                await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync())
+            await using EventHubConsumerClient consumer = new EventHubConsumerClient(EventHubConsumerClient.DefaultConsumerGroupName, connectionString, EventHubName);
+            await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync())
                 {
                     partitionEvent.Data.SystemProperties.TryGetValue("iothub-connection-device-id", out object deviceID);  // read event message from Event Hub partition 
                     if (deviceID.ToString() == "wchs6")
                     {
+                        float f;
                         string datum = Encoding.UTF8.GetString(partitionEvent.Data.Body.ToArray());
-                        listMsgs.Items.Add(datum);
-                        switch (datum.Substring(1, 3))
-                        {
+                        this.listMsgs.Items.Insert(0, datum);
+                        switch (datum.Substring(1, 3)) // Seperates the IoT data into the corrosponding properties
+                            {
                             case "Hum":
-                                data.Humidity = float.Parse(datum.Substring(11, 4));
-                                humBox.Text = data.Humidity.ToString();
+                                if (float.TryParse(datum.Substring(11, 4), out f)) {
+                                    data.Humidity = float.Parse(datum.Substring(11, 4));
+                                    humBox.Text = data.Humidity.ToString();
+                                }
                                 break;
                             case "Tem":
-                                data.Temperature = float.Parse(datum.Substring(14, 4));
-                                tempBox.Text = data.Temperature.ToString();
+                                if (float.TryParse(datum.Substring(14, 4), out f))
+                                {
+
+                                    data.Temperature = float.Parse(datum.Substring(14, 4));
+                                    tempBox.Text = data.Temperature.ToString();
+                                }
                                 break;
                             case "Lig":
-                                data.Light = float.Parse(datum.Substring(9, 4));
-                                lightBox.Text = data.Light.ToString();
+                                if (float.TryParse(datum.Substring(9, 4), out f))
+                                {
+                                    data.Light = float.Parse(datum.Substring(9, 4));
+                                    lightBox.Text = data.Light.ToString();
+                                }
                                 break;
                             case "Moi":
-                                data.Moisture = float.Parse(datum.Substring(12, 4));
-                                moisBox.Text = data.Moisture.ToString();
-                                if (data.Moisture <= plants[plantSelector.SelectedIndex].MoistureMin && moistureBelow == false)
+                                if (float.TryParse(datum.Substring(12, 4), out f)) 
                                 {
-                                    SendEmail("Low Water", "Your plants water moisture is low and will be watered shortly.");
-                                    moistureBelow = true;
+                                    data.Moisture = float.Parse(datum.Substring(12, 4));
+                                    moisBox.Text = data.Moisture.ToString();
+                                    if (plantSelector.SelectedIndex > 0)
+                                    {
+                                        if (data.Moisture <= plants[plantSelector.SelectedIndex].MoistureMin && moistureBelow == false)
+                                        {
+                                            SendEmail("Low Water", "Your plants water moisture is low and will be watered shortly.", usersEmail);
+                                            moistureBelow = true;
+                                        }
+                                        if (data.Moisture >= plants[plantSelector.SelectedIndex].MoistureMax & moistureAbove == false)
+                                        {
+                                            SendEmail("Too Much Water", "Your plants water moisture is way too high, please check to make sure the pump is working properly.", usersEmail);
+                                            moistureAbove = true;
+                                        }
+                                        if (data.Moisture > plants[plantSelector.SelectedIndex].MoistureMin && data.Moisture < plants[plantSelector.SelectedIndex].MoistureMax)
+                                        {
+                                            moistureBelow = false;
+                                            moistureAbove = false;
+                                        }
+                                    }
                                 }
-                                if (data.Moisture >= plants[plantSelector.SelectedIndex].MoistureMax & moistureAbove == false)
-                                {
-                                    SendEmail("Too Much Water", "Your plants water moisture is way too high, please check to make sure the pump is working properly.");
-                                    moistureAbove = true;    
-                                }
-                                if (data.Moisture > plants[plantSelector.SelectedIndex].MoistureMin && data.Moisture < plants[plantSelector.SelectedIndex].MoistureMax)
-                                {
-                                    moistureBelow = false;
-                                    moistureAbove = false;
-                                }
-                            break;
+                                break;
                         }
                         UpdateChart(data);
                         msgCount++;
@@ -160,11 +176,11 @@ namespace CulmativeWinAppCS12
             if (plantSelector.SelectedIndex > 0)
             {
                 preferredMoisturebx.Text = plants[plantSelector.SelectedIndex].MoistureMin.ToString() + " - " + plants[plantSelector.SelectedIndex].MoistureMax.ToString();
-                SendMsg("M" + plants[plantSelector.SelectedIndex].MoistureMin.ToString(), sendConnectionString);
-                SendMsg("M" + plants[plantSelector.SelectedIndex].MoistureMax.ToString(), sendConnectionString);
+                SendMsg("MMin" + plants[plantSelector.SelectedIndex].MoistureMin.ToString(), sendConnectionString);
+                SendMsg("MMax" + plants[plantSelector.SelectedIndex].MoistureMax.ToString(), sendConnectionString);
             }
         }
-        public static void SendEmail(string subject, string body)
+        public static void SendEmail(string subject, string body, string email)
         {
             var smtpClient = new SmtpClient("smtp-mail.outlook.com")
             {
@@ -172,39 +188,31 @@ namespace CulmativeWinAppCS12
                 Credentials = new NetworkCredential("neolastless@outlook.com", "NeoOne1New"),
                 EnableSsl = true,
             };
-            smtpClient.Send("neolastless@outlook.com", "jsuurman@gmail.com", "Your Plant", "Your plant has been water");
+            smtpClient.Send("neolastless@outlook.com", email, subject, body);
         }
         public static async void SendMsg(string msg, string connectionString)
         {
-            try
+            while (true)
             {
-                SerialPort port = new SerialPort { BaudRate = 9600, PortName = "COM6" };
-                port.Open();
-                try
-                {
-                    while (true)
-                    {
-                        System.Threading.Thread.Sleep(500);
-                        deviceClient = DeviceClient.CreateFromConnectionString(connectionString, Microsoft.Azure.Devices.Client.TransportType.Mqtt);
-                        string jsonData = JsonConvert.SerializeObject(msg);
-                        Message message = new Message(Encoding.ASCII.GetBytes(jsonData));
-                        await deviceClient.SendEventAsync(message);
-                        await Task.Delay(300);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Encountered error while reading serial port");
-                    Console.WriteLine(ex.ToString());
-                    System.Threading.Thread.Sleep(500);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Encountered error while opening serial port ");
-                Console.WriteLine(ex.ToString());
                 System.Threading.Thread.Sleep(500);
+                deviceClient = DeviceClient.CreateFromConnectionString(connectionString, Microsoft.Azure.Devices.Client.TransportType.Mqtt);
+                string jsonData = JsonConvert.SerializeObject(msg);
+                Message message = new Message(Encoding.ASCII.GetBytes(jsonData));
+                await deviceClient.SendEventAsync(message);
+                await Task.Delay(300);
             }
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SendMsg("off", sendConnectionString);
+            SendEmail("Your plant has been watered!", "Thank you for using our amazing serive! Your plant was just watered", usersEmail);
+        }
+
+        private void userEmail_TextChanged(object sender, EventArgs e)
+        {
+            usersEmail = userEmail.Text;
         }
     }
 }
