@@ -27,7 +27,7 @@ namespace CulmativeWinAppCS12
             InitializeComponent();
         }
         private static DeviceClient deviceClient;
-        string usersEmail;
+        string usersEmail = "jsuurman@gmail.com";
         string sendConnectionString = "HostName=WCHS.azure-devices.net;DeviceId=wchs5;SharedAccessKey=oqnP/yu8GtfqXRs4ffkAy/r2skjaIvK9ZAIoTDW+sBk=";
         private readonly static string connectionString = "Endpoint=sb://iothub-ns-wchs-58009161-d596108607.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=glM1A7WyVpMhjjMrhLcdQjkIr91upa8tSAIoTFiDvUI=;EntityPath=wchs";
         private readonly static string EventHubName = "wchs";
@@ -48,10 +48,13 @@ namespace CulmativeWinAppCS12
                         float f;
                         string datum = Encoding.UTF8.GetString(partitionEvent.Data.Body.ToArray());
                         this.listMsgs.Items.Insert(0, datum);
+                    if (datum.Substring(1, 5) == "Humid" || datum.Substring(1, 5) == "Tempe" || datum.Substring(1, 5) == "Light" || datum.Substring(1, 5) == "Moist")
+                    {
                         switch (datum.Substring(1, 3)) // Seperates the IoT data into the corrosponding properties
-                            {
+                        {
                             case "Hum":
-                                if (float.TryParse(datum.Substring(11, 4), out f)) {
+                                if (float.TryParse(datum.Substring(11, 4), out f))
+                                {
                                     data.Humidity = float.Parse(datum.Substring(11, 4));
                                     humBox.Text = data.Humidity.ToString();
                                 }
@@ -65,14 +68,14 @@ namespace CulmativeWinAppCS12
                                 }
                                 break;
                             case "Lig":
-                                if (float.TryParse(datum.Substring(9, 4), out f))
+                                if (float.TryParse(datum.Substring(9, 4), out f) == true)
                                 {
                                     data.Light = float.Parse(datum.Substring(9, 4));
                                     lightBox.Text = data.Light.ToString();
                                 }
                                 break;
                             case "Moi":
-                                if (float.TryParse(datum.Substring(12, 4), out f)) 
+                                if (float.TryParse(datum.Substring(12, 4), out f))
                                 {
                                     data.Moisture = float.Parse(datum.Substring(12, 4));
                                     moisBox.Text = data.Moisture.ToString();
@@ -96,6 +99,7 @@ namespace CulmativeWinAppCS12
                                     }
                                 }
                                 break;
+                        }
                         }
                         UpdateChart(data);
                         msgCount++;
@@ -176,8 +180,8 @@ namespace CulmativeWinAppCS12
             if (plantSelector.SelectedIndex > 0)
             {
                 preferredMoisturebx.Text = plants[plantSelector.SelectedIndex].MoistureMin.ToString() + " - " + plants[plantSelector.SelectedIndex].MoistureMax.ToString();
-                SendMsg("MMin" + plants[plantSelector.SelectedIndex].MoistureMin.ToString(), sendConnectionString);
-                SendMsg("MMax" + plants[plantSelector.SelectedIndex].MoistureMax.ToString(), sendConnectionString);
+                SendMsg("MMin" + (plants[plantSelector.SelectedIndex].MoistureMin*100).ToString(), sendConnectionString);
+                SendMsg("MMax" + (plants[plantSelector.SelectedIndex].MoistureMax*100).ToString(), sendConnectionString);
             }
         }
         public static void SendEmail(string subject, string body, string email)
@@ -192,27 +196,30 @@ namespace CulmativeWinAppCS12
         }
         public static async void SendMsg(string msg, string connectionString)
         {
-            while (true)
-            {
                 System.Threading.Thread.Sleep(500);
                 deviceClient = DeviceClient.CreateFromConnectionString(connectionString, Microsoft.Azure.Devices.Client.TransportType.Mqtt);
                 string jsonData = JsonConvert.SerializeObject(msg);
                 Message message = new Message(Encoding.ASCII.GetBytes(jsonData));
                 await deviceClient.SendEventAsync(message);
                 await Task.Delay(300);
-            }
-
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SendMsg("off", sendConnectionString);
-            SendEmail("Your plant has been watered!", "Thank you for using our amazing serive! Your plant was just watered", usersEmail);
+            SendMsg("ooff", sendConnectionString);
+            SendEmail("Emergency Water Off", "You have activated the emergency protocol to turn off the water pump.", usersEmail);
         }
 
         private void userEmail_TextChanged(object sender, EventArgs e)
         {
             usersEmail = userEmail.Text;
+        }
+
+        private void onButton_Click(object sender, EventArgs e)
+        {
+            SendMsg("oon", sendConnectionString);
+            SendEmail("Water On", "You have re-activated the water pump.", usersEmail);
+
         }
     }
 }

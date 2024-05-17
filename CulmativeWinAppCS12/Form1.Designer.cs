@@ -44,18 +44,19 @@
             this.plantSelector = new System.Windows.Forms.ComboBox();
             this.preferredMoisturelbl = new System.Windows.Forms.Label();
             this.preferredMoisturebx = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.offButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.userEmail = new System.Windows.Forms.TextBox();
+            this.onButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.chartData)).BeginInit();
             this.SuspendLayout();
             // 
             // listMsgs
             // 
             this.listMsgs.FormattingEnabled = true;
-            this.listMsgs.Location = new System.Drawing.Point(27, 12);
+            this.listMsgs.Location = new System.Drawing.Point(27, 381);
             this.listMsgs.Name = "listMsgs";
-            this.listMsgs.Size = new System.Drawing.Size(232, 82);
+            this.listMsgs.Size = new System.Drawing.Size(232, 316);
             this.listMsgs.TabIndex = 0;
             this.listMsgs.UseWaitCursor = true;
             // 
@@ -180,21 +181,21 @@
             this.preferredMoisturebx.TabIndex = 12;
             this.preferredMoisturebx.Text = "0";
             // 
-            // button1
+            // offButton
             // 
-            this.button1.BackColor = System.Drawing.Color.Tomato;
-            this.button1.Location = new System.Drawing.Point(384, 29);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(176, 44);
-            this.button1.TabIndex = 13;
-            this.button1.Text = "Turn off Water";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.offButton.BackColor = System.Drawing.Color.Tomato;
+            this.offButton.Location = new System.Drawing.Point(384, 29);
+            this.offButton.Name = "offButton";
+            this.offButton.Size = new System.Drawing.Size(176, 44);
+            this.offButton.TabIndex = 13;
+            this.offButton.Text = "Turn off Water";
+            this.offButton.UseVisualStyleBackColor = false;
+            this.offButton.Click += new System.EventHandler(this.button1_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 551);
+            this.label1.Location = new System.Drawing.Point(44, 29);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(54, 13);
             this.label1.TabIndex = 14;
@@ -202,18 +203,30 @@
             // 
             // userEmail
             // 
-            this.userEmail.Location = new System.Drawing.Point(74, 551);
+            this.userEmail.Location = new System.Drawing.Point(104, 29);
             this.userEmail.Name = "userEmail";
             this.userEmail.Size = new System.Drawing.Size(209, 20);
             this.userEmail.TabIndex = 15;
             this.userEmail.TextChanged += new System.EventHandler(this.userEmail_TextChanged);
             // 
+            // onButton
+            // 
+            this.onButton.BackColor = System.Drawing.Color.YellowGreen;
+            this.onButton.Location = new System.Drawing.Point(384, 80);
+            this.onButton.Name = "onButton";
+            this.onButton.Size = new System.Drawing.Size(176, 23);
+            this.onButton.TabIndex = 16;
+            this.onButton.Text = "Turn on Water";
+            this.onButton.UseVisualStyleBackColor = false;
+            this.onButton.Click += new System.EventHandler(this.onButton_Click);
+            // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(1247, 718);
+            this.Controls.Add(this.onButton);
             this.Controls.Add(this.userEmail);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.offButton);
             this.Controls.Add(this.preferredMoisturebx);
             this.Controls.Add(this.preferredMoisturelbl);
             this.Controls.Add(this.plantSelector);
@@ -250,9 +263,10 @@
         private System.Windows.Forms.ComboBox plantSelector;
         private System.Windows.Forms.Label preferredMoisturelbl;
         private System.Windows.Forms.Label preferredMoisturebx;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button offButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox userEmail;
+        private System.Windows.Forms.Button onButton;
     }
 }
 
