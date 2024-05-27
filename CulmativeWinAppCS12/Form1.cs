@@ -1,10 +1,7 @@
 ﻿using Azure.Messaging.EventHubs.Consumer;
 using System;
 using System.Collections.Generic;
-using MessageMedia.Messages;
-using MessageMedia.Messages.Controllers;
-using MessageMedia.Messages.Exceptions;
-using MessageMedia.Messages.Models;
+
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +13,7 @@ using System.Net;
 using System.IO.Ports;
 using Newtonsoft.Json;
 using Microsoft.Azure.Devices.Client;
-using Message = Microsoft.Azure.Devices.Client.Message;
+using Microsoft.Azure.Amqp.Framing;
 
 namespace CulmativeWinAppCS12
 {
@@ -36,6 +33,9 @@ namespace CulmativeWinAppCS12
         Plant[] plants = new Plant[2035];
         bool moistureBelow = false;
         bool moistureAbove = false;
+        DateTime lightLastGood;
+        DateTime tempLastGood;
+        DateTime humidityLastGood;
 
         private async Task ReceiveMessagesFromDeviceAsync()
         {
@@ -57,6 +57,24 @@ namespace CulmativeWinAppCS12
                                 {
                                     data.Humidity = float.Parse(datum.Substring(11, 4));
                                     humBox.Text = data.Humidity.ToString();
+                                    if (data.Humidity > 60 && data.Humidity < 80)
+                                    {
+                                        humidityTipBx.Text = "Humidity is good!";
+                                        humidityLastGood = DateTime.Now;
+                                    }
+                                    if (Math.Abs(humidityLastGood.Day - DateTime.Now.Day) > 2)
+                                    {
+                                        if (data.Humidity < 60)
+                                        {
+                                            humidityTipBx.Text = "Not Humid enough. Move to a more humid place.";`  
+                                            SendEmail("Plant is Lacking Humidity", humidityTipBx.Text, usersEmail);
+                                        }
+                                        if (data.Humidity > 80)
+                                        {
+                                            humidityTipBx.Text = "Too Humid. Move to a less humid place.";
+                                            SendEmail("Plant is too Humid", humidityTipBx.Text, usersEmail);
+                                        }
+                                    }
                                 }
                                 break;
                             case "Tem":
@@ -65,6 +83,24 @@ namespace CulmativeWinAppCS12
 
                                     data.Temperature = float.Parse(datum.Substring(14, 4));
                                     tempBox.Text = data.Temperature.ToString();
+                                    if (data.Temperature > 15 && data.Temperature < 25)
+                                    {
+                                        TempTipBx.Text = "Temperature is good!";
+                                        tempLastGood = DateTime.Now;
+                                    }
+                                    if (Math.Abs(DateTime.Now.Day - tempLastGood.Day) > 2)
+                                    {
+                                        if (data.Temperature > 25)
+                                        {
+                                            TempTipBx.Text = "Temperature is too high. Please consider moving plant to a cooler place.";
+                                            SendEmail("Plant Too Hot", "Temperature is too high. Please consider moving plant to a cooler place.", usersEmail);
+                                        }
+                                        if (data.Temperature < 15)
+                                        {
+                                            TempTipBx.Text = "Temperature is too cool. Please consider moving plant to a warmer place.";
+                                            SendEmail("Plant Too Cold", "Temperature is too cold. Please consider moving plant to a warmer place.", usersEmail);
+                                        }
+                                    }
                                 }
                                 break;
                             case "Lig":
@@ -72,6 +108,17 @@ namespace CulmativeWinAppCS12
                                 {
                                     data.Light = float.Parse(datum.Substring(9, 4));
                                     lightBox.Text = data.Light.ToString();
+                                    if (data.Light > 60)
+                                    {
+                                        lightTipBx.Text = "Light Levels are good!";
+                                        lightLastGood = DateTime.Now;
+                                       
+                                    }
+                                    else if (Math.Abs(lightLastGood.Day - DateTime.Now.Day) > 2)
+                                    {
+                                        lightTipBx.Text = "Light levels are too low. Please move to a space with more light.";
+                                        SendEmail("Low Light!", "Light levels are too low.Please move to a space with more light.", usersEmail);
+                                    }
                                 }
                                 break;
                             case "Moi":
@@ -199,7 +246,7 @@ namespace CulmativeWinAppCS12
                 System.Threading.Thread.Sleep(500);
                 deviceClient = DeviceClient.CreateFromConnectionString(connectionString, Microsoft.Azure.Devices.Client.TransportType.Mqtt);
                 string jsonData = JsonConvert.SerializeObject(msg);
-                Message message = new Message(Encoding.ASCII.GetBytes(jsonData));
+                Microsoft.Azure.Devices.Client.Message message = new Microsoft.Azure.Devices.Client.Message(Encoding.ASCII.GetBytes(jsonData));
                 await deviceClient.SendEventAsync(message);
                 await Task.Delay(300);
         }

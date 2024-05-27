@@ -48,6 +48,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.userEmail = new System.Windows.Forms.TextBox();
             this.onButton = new System.Windows.Forms.Button();
+            this.humidityTipBx = new System.Windows.Forms.Label();
+            this.TempTipBx = new System.Windows.Forms.TextBox();
+            this.HumTipBx = new System.Windows.Forms.TextBox();
+            this.lightTipBx = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.chartData)).BeginInit();
             this.SuspendLayout();
             // 
@@ -220,9 +224,45 @@
             this.onButton.UseVisualStyleBackColor = false;
             this.onButton.Click += new System.EventHandler(this.onButton_Click);
             // 
+            // humidityTipBx
+            // 
+            this.humidityTipBx.AutoSize = true;
+            this.humidityTipBx.Location = new System.Drawing.Point(367, 178);
+            this.humidityTipBx.Name = "humidityTipBx";
+            this.humidityTipBx.Size = new System.Drawing.Size(0, 13);
+            this.humidityTipBx.TabIndex = 18;
+            // 
+            // TempTipBx
+            // 
+            this.TempTipBx.Location = new System.Drawing.Point(367, 119);
+            this.TempTipBx.Name = "TempTipBx";
+            this.TempTipBx.ReadOnly = true;
+            this.TempTipBx.Size = new System.Drawing.Size(203, 20);
+            this.TempTipBx.TabIndex = 19;
+            // 
+            // HumTipBx
+            // 
+            this.HumTipBx.Location = new System.Drawing.Point(367, 178);
+            this.HumTipBx.Name = "HumTipBx";
+            this.HumTipBx.ReadOnly = true;
+            this.HumTipBx.Size = new System.Drawing.Size(203, 20);
+            this.HumTipBx.TabIndex = 20;
+            // 
+            // lightTipBx
+            // 
+            this.lightTipBx.Location = new System.Drawing.Point(370, 227);
+            this.lightTipBx.Name = "lightTipBx";
+            this.lightTipBx.ReadOnly = true;
+            this.lightTipBx.Size = new System.Drawing.Size(200, 20);
+            this.lightTipBx.TabIndex = 21;
+            // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(1247, 718);
+            this.Controls.Add(this.lightTipBx);
+            this.Controls.Add(this.HumTipBx);
+            this.Controls.Add(this.TempTipBx);
+            this.Controls.Add(this.humidityTipBx);
             this.Controls.Add(this.onButton);
             this.Controls.Add(this.userEmail);
             this.Controls.Add(this.label1);
@@ -267,6 +307,10 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox userEmail;
         private System.Windows.Forms.Button onButton;
+        private System.Windows.Forms.Label humidityTipBx;
+        private System.Windows.Forms.TextBox TempTipBx;
+        private System.Windows.Forms.TextBox HumTipBx;
+        private System.Windows.Forms.TextBox lightTipBx;
     }
 }
 
