@@ -33,21 +33,21 @@ namespace CulmativeWinAppCS12
         Plant[] plants = new Plant[2035];
         bool moistureBelow = false;
         bool moistureAbove = false;
-        DateTime lightLastGood;
-        DateTime tempLastGood;
-        DateTime humidityLastGood;
+        DateTime lightLastGood = DateTime.Now;
+        DateTime tempLastGood = DateTime.Now;
+        DateTime humidityLastGood = DateTime.Now;
 
         private async Task ReceiveMessagesFromDeviceAsync()
         {
             await using EventHubConsumerClient consumer = new EventHubConsumerClient(EventHubConsumerClient.DefaultConsumerGroupName, connectionString, EventHubName);
             await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync())
+            {
+                partitionEvent.Data.SystemProperties.TryGetValue("iothub-connection-device-id", out object deviceID);  // read event message from Event Hub partition 
+                if (deviceID.ToString() == "wchs6")
                 {
-                    partitionEvent.Data.SystemProperties.TryGetValue("iothub-connection-device-id", out object deviceID);  // read event message from Event Hub partition 
-                    if (deviceID.ToString() == "wchs6")
-                    {
-                        float f;
-                        string datum = Encoding.UTF8.GetString(partitionEvent.Data.Body.ToArray());
-                        this.listMsgs.Items.Insert(0, datum);
+                    float f;
+                    string datum = Encoding.UTF8.GetString(partitionEvent.Data.Body.ToArray());
+                    this.listMsgs.Items.Insert(0, datum);
                     if (datum.Substring(1, 5) == "Humid" || datum.Substring(1, 5) == "Tempe" || datum.Substring(1, 5) == "Light" || datum.Substring(1, 5) == "Moist")
                     {
                         switch (datum.Substring(1, 3)) // Seperates the IoT data into the corrosponding properties
@@ -66,7 +66,7 @@ namespace CulmativeWinAppCS12
                                     {
                                         if (data.Humidity < 60)
                                         {
-                                            humidityTipBx.Text = "Not Humid enough. Move to a more humid place.";`  
+                                            humidityTipBx.Text = "Not Humid enough. Move to a more humid place.";  
                                             SendEmail("Plant is Lacking Humidity", humidityTipBx.Text, usersEmail);
                                         }
                                         if (data.Humidity > 80)
@@ -118,6 +118,10 @@ namespace CulmativeWinAppCS12
                                     {
                                         lightTipBx.Text = "Light levels are too low. Please move to a space with more light.";
                                         SendEmail("Low Light!", "Light levels are too low.Please move to a space with more light.", usersEmail);
+                                    }
+                                    else
+                                    {
+                                        lightTipBx.Text = "Light levels are currently too low";
                                     }
                                 }
                                 break;
@@ -233,13 +237,13 @@ namespace CulmativeWinAppCS12
         }
         public static void SendEmail(string subject, string body, string email)
         {
-            var smtpClient = new SmtpClient("smtp-mail.outlook.com")
+            /*var smtpClient = new SmtpClient("smtp-mail.outlook.com")
             {
                 Port = 587,
                 Credentials = new NetworkCredential("neolastless@outlook.com", "NeoOne1New"),
                 EnableSsl = true,
             };
-            smtpClient.Send("neolastless@outlook.com", email, subject, body);
+            smtpClient.Send("neolastless@outlook.com", email, subject, body);*/
         }
         public static async void SendMsg(string msg, string connectionString)
         {
