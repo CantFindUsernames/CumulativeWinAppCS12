@@ -33,11 +33,11 @@ namespace CulmativeWinAppCS12
         Plant[] plants = new Plant[2035];
         bool moistureBelow = false;
         bool moistureAbove = false;
-        DateTime lightLastGood = DateTime.Now;
+        DateTime lightLastGood = DateTime.Now;  // To keep track of how long since the plant has been in ideal conditions
         DateTime tempLastGood = DateTime.Now;
         DateTime humidityLastGood = DateTime.Now;
 
-        private async Task ReceiveMessagesFromDeviceAsync()
+        private async Task ReceiveMessagesFromDeviceAsync() // Pulls data from the hub
         {
             await using EventHubConsumerClient consumer = new EventHubConsumerClient(EventHubConsumerClient.DefaultConsumerGroupName, connectionString, EventHubName);
             await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync())
@@ -57,19 +57,19 @@ namespace CulmativeWinAppCS12
                                 {
                                     data.Humidity = float.Parse(datum.Substring(11, 4));
                                     humBox.Text = data.Humidity.ToString();
-                                    if (data.Humidity > 60 && data.Humidity < 80)
+                                    if (data.Humidity > 15 && data.Humidity < 25)
                                     {
                                         humidityTipBx.Text = "Humidity is good!";
                                         humidityLastGood = DateTime.Now;
                                     }
-                                    if (Math.Abs(humidityLastGood.Day - DateTime.Now.Day) > 2)
+                                    else if (Math.Abs(humidityLastGood.Day - DateTime.Now.Day) > 2)
                                     {
-                                        if (data.Humidity < 60)
+                                        if (data.Humidity < 20)
                                         {
                                             humidityTipBx.Text = "Not Humid enough. Move to a more humid place.";  
                                             SendEmail("Plant is Lacking Humidity", humidityTipBx.Text, usersEmail);
                                         }
-                                        if (data.Humidity > 80)
+                                        if (data.Humidity > 50)
                                         {
                                             humidityTipBx.Text = "Too Humid. Move to a less humid place.";
                                             SendEmail("Plant is too Humid", humidityTipBx.Text, usersEmail);
@@ -157,7 +157,7 @@ namespace CulmativeWinAppCS12
                     }
                 }
         }
-        private void UpdateChart(Data data)
+        private void UpdateChart(Data data) //Updates the chart with new data as it arrives
         {
             this.chartData.Series["Temperature"].Points.AddXY(msgCount, data.Temperature);
             this.chartData.Series["Humidity"].Points.AddXY(msgCount++, data.Humidity);
@@ -188,14 +188,14 @@ namespace CulmativeWinAppCS12
             this.listMsgs.Items.Add("Reading data from WCHS IoT Devices. Ctrl-C to exit.\n");
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e) //Run as soon as the form is loaded
         {
             SetUpChart();
             SetUpListBox();
             DownloadData();
             ReceiveMessagesFromDeviceAsync();
         }
-        private void DownloadData()
+        private void DownloadData() //Run on setup only
         {
             StreamReader reader = new StreamReader("PlantInfo.csv");
             int ColumnsCount = reader.ReadLine().Split(',').Length;
@@ -226,7 +226,7 @@ namespace CulmativeWinAppCS12
             }      
         }
 
-        private void plantSelector_SelectedIndexChanged(object sender, EventArgs e)
+        private void plantSelector_SelectedIndexChanged(object sender, EventArgs e) //Updates threshold for water moisture
         {
             if (plantSelector.SelectedIndex > 0)
             {
@@ -235,17 +235,17 @@ namespace CulmativeWinAppCS12
                 SendMsg("MMax" + (plants[plantSelector.SelectedIndex].MoistureMax*100).ToString(), sendConnectionString);
             }
         }
-        public static void SendEmail(string subject, string body, string email)
+        public static void SendEmail(string subject, string body, string email) // Notifies user of important updates
         {
-            /*var smtpClient = new SmtpClient("smtp-mail.outlook.com")
+            var smtpClient = new SmtpClient("smtp-mail.outlook.com")
             {
                 Port = 587,
                 Credentials = new NetworkCredential("neolastless@outlook.com", "NeoOne1New"),
                 EnableSsl = true,
             };
-            smtpClient.Send("neolastless@outlook.com", email, subject, body);*/
+            smtpClient.Send("neolastless@outlook.com", email, subject, body);
         }
-        public static async void SendMsg(string msg, string connectionString)
+        public static async void SendMsg(string msg, string connectionString) // Sends data to the IoT hub for communicating back to the plant
         {
                 System.Threading.Thread.Sleep(500);
                 deviceClient = DeviceClient.CreateFromConnectionString(connectionString, Microsoft.Azure.Devices.Client.TransportType.Mqtt);
@@ -255,18 +255,18 @@ namespace CulmativeWinAppCS12
                 await Task.Delay(300);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e) // Turns pump off
         {
             SendMsg("ooff", sendConnectionString);
             SendEmail("Emergency Water Off", "You have activated the emergency protocol to turn off the water pump.", usersEmail);
         }
 
-        private void userEmail_TextChanged(object sender, EventArgs e)
+        private void userEmail_TextChanged(object sender, EventArgs e) // Updates the email of the user
         {
             usersEmail = userEmail.Text;
         }
 
-        private void onButton_Click(object sender, EventArgs e)
+        private void onButton_Click(object sender, EventArgs e) // Turns pump on, not nessicarily pumping water, but that it will pump water if it needs to now
         {
             SendMsg("oon", sendConnectionString);
             SendEmail("Water On", "You have re-activated the water pump.", usersEmail);
