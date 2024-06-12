@@ -57,19 +57,19 @@ namespace CulmativeWinAppCS12
                                 {
                                     data.Humidity = float.Parse(datum.Substring(11, 4));
                                     humBox.Text = data.Humidity.ToString();
-                                    if (data.Humidity > 15 && data.Humidity < 25)
+                                    if (data.Humidity > 15 && data.Humidity < 30)
                                     {
                                         humidityTipBx.Text = "Humidity is good!";
                                         humidityLastGood = DateTime.Now;
                                     }
-                                    else if (Math.Abs(humidityLastGood.Day - DateTime.Now.Day) > 2)
+                                    else if (Math.Abs(humidityLastGood.Day - DateTime.Now.Day) > 1)
                                     {
-                                        if (data.Humidity < 20)
+                                        if (data.Humidity <= 15)
                                         {
                                             humidityTipBx.Text = "Not Humid enough. Move to a more humid place.";  
                                             SendEmail("Plant is Lacking Humidity", humidityTipBx.Text, usersEmail);
                                         }
-                                        if (data.Humidity > 50)
+                                        if (data.Humidity >= 30)
                                         {
                                             humidityTipBx.Text = "Too Humid. Move to a less humid place.";
                                             SendEmail("Plant is too Humid", humidityTipBx.Text, usersEmail);
